@@ -3,19 +3,29 @@ package com.trial.urlshortener.service.strategy;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class RandomShortCodeStrategy implements ShortCodeStrategy {
-
     private static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final int MIN_LENGTH = 5;
-    private static final int MAX_LENGTH = 10;
-
     private final SecureRandom random = new SecureRandom();
 
+    // 후보 개수 (1차 시도 시 여러 후보 제공)
+    private static final int CANDIDATE_COUNT = 8;
+
     @Override
-    public String generate(String originalUrl) {
-        int length = MIN_LENGTH + random.nextInt(MAX_LENGTH - MIN_LENGTH + 1);
+    public List<String> generateCandidates(String originalUrl, int length) {
+        List<String> candidates = new ArrayList<>();
+
+        for (int i = 0; i < CANDIDATE_COUNT; i++) {
+            candidates.add(generateRandomCode(length));
+        }
+
+        return candidates;
+    }
+
+    private String generateRandomCode(int length) {
         StringBuilder sb = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
@@ -24,4 +34,5 @@ public class RandomShortCodeStrategy implements ShortCodeStrategy {
 
         return sb.toString();
     }
+
 }

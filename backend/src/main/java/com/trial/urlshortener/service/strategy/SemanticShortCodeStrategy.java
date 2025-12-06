@@ -3,49 +3,76 @@ package com.trial.urlshortener.service.strategy;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class SemanticShortCodeStrategy implements ShortCodeStrategy {
 
     @Override
-    public String generate(String originalUrl) {
+    public List<String> generateCandidates(String originalUrl, int length) {
         URI uri = URI.create(originalUrl);
 
-        String host = uri.getHost();
-        String path = uri.getPath();
+        String host = normalize(uri.getHost());
+        List<String> segments = extractSegments(uri.getPath());
 
-        // host 약자 추출 예시 (bangbangcapital → bbcpt)
-        String hostAbbr = abbreviate(host);
+        List<String> candidates = new ArrayList<>();
 
-        // path 기반 의미 추출 예시 (/events/2025/christmas → 25chr)
-        String semantic = extractMeaning(path);
-
-        // 1순위: path 기반 의미
-        if (semantic != null) {
-            return semantic;
+        // 1) path 마지막 segment 기반 후보
+        if (!segments.isEmpty()) {
+            String last = segments.get(segments.size() - 1);
+            candidates.addAll(makeVariations(last));
         }
-        // 2순위: host 기반 의미
-        return hostAbbr;
+
+        // 2) path + host 조합
+        if (!segments.isEmpty()) {
+            candidates.addAll(combine(host, segments.get(segments.size() - 1)));
+        }
+
+        // 3) host 기반 요약 후보
+        candidates.addAll(makeVariations(host));
+
+        // 4) 길이로 자르기 + 필터링
+        return candidates.stream()
+                .filter(s -> s.length() >= 3)
+                .map(s -> s.substring(0, Math.min(length, s.length())))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    private String abbreviate(String host) {
-        if (host == null) return "host";
-        host = host.replaceAll("[^A-Za-z]", "");
-        return host.length() <= 5 ? host : host.substring(0, 5);
+    private String normalize(String s) {
+        return s == null ? "" : s.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
     }
 
-    private String extractMeaning(String path) {
-        if (path == null) return null;
+    private List<String> extractSegments(String path) {
+        if (path == null) return List.of();
+        return Arrays.stream(path.split("/"))
+                .map(this::normalize)
+                .filter(s -> !s.isEmpty())
+                .toList();
+    }
 
-        String[] segments = path.split("/");
-        if (segments.length == 0) return null;
+    // 단어 변형을 여러 개 생성
+    private List<String> makeVariations(String s) {
+        List<String> list = new ArrayList<>();
+        if (s.length() >= 3) list.add(s.substring(0, 3));
+        if (s.length() >= 4) list.add(s.substring(0, 4));
+        if (s.length() >= 5) list.add(s.substring(0, 5));
+        if (s.length() >= 6) list.add(s.substring(0, 6));
+        list.add(s);
+        return list;
+    }
 
-        String last = segments[segments.length - 1];
-        if (last.isEmpty()) return null;
-
-        String alpha = last.replaceAll("[^A-Za-z]", "");
-        if (alpha.length() < 3) return null;
-
-        return alpha.substring(0, 5).toLowerCase();
+    private List<String> combine(String host, String last) {
+        List<String> list = new ArrayList<>();
+        if (!host.isEmpty() && !last.isEmpty()) {
+            list.add(host.substring(0, Math.min(3, host.length())) +
+                    last.substring(0, Math.min(3, last.length())));
+            list.add(host.substring(0, Math.min(2, host.length())) +
+                    last.substring(0, Math.min(4, last.length())));
+        }
+        return list;
     }
 }

@@ -1,5 +1,7 @@
 package com.trial.urlshortener.service.strategy;
 
+import java.util.List;
+
 public interface ShortCodeStrategy {
-    String generate(String originUrl);
+    List<String> generateCandidates(String originUrl, int length);
 }
