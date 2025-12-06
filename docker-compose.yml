@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    container_name: urlshortener-backend
+    ports:
+      - "8081:8081"
+    networks:
+      - app-net
+
+  nginx:
+    image: nginx:1.25
+    container_name: urlshortener-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - backend
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

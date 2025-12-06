@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener Demo</title>
+</head>
+<body>
+<h2>URL Shortener Demo</h2>
+
+<label>
+    Original URL:
+    <input id="originUrl" type="text" size="60" placeholder="https://example.com/page">
+</label>
+<br><br>
+
+<label>
+    Type:
+    <select id="type">
+        <option value="RANDOM">RANDOM</option>
+        <option value="SEMANTIC">SEMANTIC</option>
+    </select>
+</label>
+
+<br><br>
+<button onclick="createShortUrl()">Create</button>
+
+<p id="result"></p>
+
+<script>
+    async function createShortUrl() {
+        const payload = {
+            shortUrlType: document.getElementById("type").value,
+            originUrl: document.getElementById("originUrl").value
+        };
+
+        const res = await fetch("/short-urls", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        document.getElementById("result").innerHTML =
+            `Short URL: <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>`;
+    }
+</script>
+
+</body>
+</html>

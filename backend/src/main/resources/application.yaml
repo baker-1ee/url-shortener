@@ -1,5 +1,5 @@
 shortener:
-  base-url: "http://localhost:8081"
+  base-url: "http://sho.rt"
 
 server:
   port: 8081
