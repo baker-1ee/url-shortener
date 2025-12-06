@@ -28,12 +28,12 @@ public class ShortUrlCreateService {
 
     private static final int MIN_LENGTH = 5;
     private static final int MAX_LENGTH = 10;
-    private static final int MAX_RETRY = 3;
 
     @Transactional
     public CreateShortUrlResponse create(CreateShortUrlRequest request) {
         String originUrl = request.getOriginUrl();
         ShortUrlType shortUrlType = request.getShortUrlType();
+        
         try {
             return repository.findByOriginUrlAndUrlType(originUrl, shortUrlType)
                     .map(entity -> CreateShortUrlResponse.of(entity, baseUrl))
