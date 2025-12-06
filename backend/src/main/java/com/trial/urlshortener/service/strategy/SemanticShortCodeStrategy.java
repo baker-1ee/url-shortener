@@ -34,10 +34,9 @@ public class SemanticShortCodeStrategy implements ShortCodeStrategy {
         // 3) host 기반 요약 후보
         candidates.addAll(makeVariations(host));
 
-        // 4) 길이로 자르기 + 필터링
+        // 4) 최소 길이(length) 보장 + distinct
         return candidates.stream()
-                .filter(s -> s.length() >= 3)
-                .map(s -> s.substring(0, Math.min(length, s.length())))
+                .map(s -> padToLength(s, length))  // ★ 길이 부족하면 늘림
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -54,7 +53,7 @@ public class SemanticShortCodeStrategy implements ShortCodeStrategy {
                 .toList();
     }
 
-    // 단어 변형을 여러 개 생성
+    // 단어 변형을 여러 개 생성 (길이는 제한 없음)
     private List<String> makeVariations(String s) {
         List<String> list = new ArrayList<>();
         if (s.length() >= 3) list.add(s.substring(0, 3));
@@ -74,5 +73,18 @@ public class SemanticShortCodeStrategy implements ShortCodeStrategy {
                     last.substring(0, Math.min(4, last.length())));
         }
         return list;
+    }
+
+    // ★ 길이가 부족할 때 자동으로 length까지 확장
+    private String padToLength(String s, int length) {
+        if (s.length() >= length) {
+            return s.substring(0, length);
+        }
+
+        StringBuilder sb = new StringBuilder(s);
+        while (sb.length() < length) {
+            sb.append(s.charAt(sb.length() % s.length()));  // 반복 패턴으로 채움
+        }
+        return sb.toString();
     }
 }
