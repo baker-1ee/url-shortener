@@ -1,4 +1,4 @@
-package com.trial.urlshortener.sample.entity;
+package com.trial.sample.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,7 +1,7 @@
-package com.trial.urlshortener.sample.controller;
+package com.trial.sample.controller;
 
-import com.trial.urlshortener.sample.entity.Sample;
-import com.trial.urlshortener.sample.service.SampleService;
+import com.trial.sample.entity.Sample;
+import com.trial.sample.service.SampleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

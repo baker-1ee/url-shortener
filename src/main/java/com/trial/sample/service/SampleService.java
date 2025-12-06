@@ -1,7 +1,7 @@
-package com.trial.urlshortener.sample.service;
+package com.trial.sample.service;
 
-import com.trial.urlshortener.sample.entity.Sample;
-import com.trial.urlshortener.sample.repository.SampleRepository;
+import com.trial.sample.entity.Sample;
+import com.trial.sample.repository.SampleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
