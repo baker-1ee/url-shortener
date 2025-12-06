@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class UrlShortenerService {
+public class ShortUrlCreateService {
     @Value("${shortener.base-url}")
     private String baseUrl;
     private final UrlMappingRepository repository;
@@ -40,14 +40,4 @@ public class UrlShortenerService {
         return CreateShortUrlResponse.of(newUrlMapping, baseUrl);
     }
 
-    @Transactional
-    public String resolve(String shortCode) {
-        return repository.findByShortCode(shortCode)
-                .map(entity -> {
-                    entity.increaseHitCount(1L);
-                    repository.save(entity);
-                    return entity.getOriginUrl();
-                })
-                .orElseThrow(() -> new IllegalArgumentException("ShortCode not found: " + shortCode));
-    }
 }

@@ -4,7 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -40,8 +43,8 @@ public class UrlMappingEntity {
         );
     }
 
-    public void increaseHitCount(Long delta) {
-        hitCount += delta;
+    public void increaseHitCount(Long deltaHitCount) {
+        hitCount += deltaHitCount;
         updatedAt = LocalDateTime.now();
     }
 }

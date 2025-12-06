@@ -2,7 +2,8 @@ package com.trial.urlshortener.controller;
 
 import com.trial.urlshortener.dto.CreateShortUrlRequest;
 import com.trial.urlshortener.dto.CreateShortUrlResponse;
-import com.trial.urlshortener.service.UrlShortenerService;
+import com.trial.urlshortener.service.ShortUrlCreateService;
+import com.trial.urlshortener.service.ShortUrlResolveService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,11 +16,12 @@ import java.net.URI;
 @RestController
 @RequiredArgsConstructor
 public class UrlShortenerController {
-    private final UrlShortenerService service;
+    private final ShortUrlCreateService createService;
+    private final ShortUrlResolveService resolveService;
 
     @PostMapping("/short-urls")
     public ResponseEntity<CreateShortUrlResponse> create(@Valid @RequestBody CreateShortUrlRequest request) {
-        CreateShortUrlResponse response = service.create(request);
+        CreateShortUrlResponse response = createService.create(request);
 
         return ResponseEntity
                 .created(URI.create(response.getShortUrl()))
@@ -28,7 +30,7 @@ public class UrlShortenerController {
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
-        String originUrl = service.resolve(shortCode);
+        String originUrl = resolveService.resolve(shortCode);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(originUrl));
