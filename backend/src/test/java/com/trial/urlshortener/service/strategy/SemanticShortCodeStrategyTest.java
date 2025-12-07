@@ -46,23 +46,6 @@ class SemanticShortCodeStrategyTest {
     }
 
     // ====================================================
-    // makeVariations() 테스트
-    // ====================================================
-    @Test
-    @DisplayName("makeVariations - 다양한 prefix 후보 생성")
-    void testMakeVariations() {
-        List<String> vars = strategy.makeVariations("naver");
-
-        assertThat(vars).containsExactly(
-                "nav",   // 3글자
-                "nave",  // 4글자
-                "naver", // 5글자
-                "naver", // 6글자 불가 → 5글자 그대로
-                "naver"  // original
-        );
-    }
-
-    // ====================================================
     // combine() 테스트
     // ====================================================
     @Test

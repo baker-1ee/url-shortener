@@ -1,29 +1,35 @@
 package com.trial.urlshortener.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.trial.urlshortener.dto.CachedUrl;
+import com.trial.urlshortener.entity.UrlMappingEntity;
 import com.trial.urlshortener.repository.UrlMappingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class ShortUrlResolveService {
-    private final Cache<String, CachedUrl> shortUrlCache;
+    private final Cache<String, String> shortUrlCache;
     private final UrlMappingRepository repository;
+    private final HitCountCounterService hitCountCounterService;
 
+    @Transactional(readOnly = true)
     public String resolve(String shortCode) {
-        CachedUrl cached = shortUrlCache.get(
+        // 1) URL 매핑 조회 (Caffeine + DB)
+        String originUrl = shortUrlCache.get(
                 shortCode,
                 key -> repository.findByShortCode(key)
-                        .map(entity -> new CachedUrl(entity.getOriginUrl(), 0L))
+                        .map(UrlMappingEntity::getOriginUrl)
                         .orElse(null)
         );
 
-        if (cached == null)
+        if (originUrl == null) {
             throw new IllegalArgumentException("ShortCode not found: " + shortCode);
+        }
+        // 2) 방문 횟수는 Redis 에 저장
+        hitCountCounterService.increment(shortCode);
 
-        cached.increaseHitCount();
-        return cached.getOriginUrl();
+        return originUrl;
     }
 }

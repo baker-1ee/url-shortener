@@ -4,6 +4,7 @@ services:
     container_name: urlshortener-backend
     depends_on:
       - mysql
+      - redis
     ports:
       - "8081:8081"
     networks:
@@ -35,6 +36,14 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - app-net
+
+  redis:
+    image: redis:7
+    container_name: urlshortener-redis
+    ports:
+      - "6379:6379"
     networks:
       - app-net
 
