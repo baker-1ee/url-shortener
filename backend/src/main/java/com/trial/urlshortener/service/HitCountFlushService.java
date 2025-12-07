@@ -1,6 +1,6 @@
 package com.trial.urlshortener.service;
 
-import com.trial.urlshortener.repository.UrlMappingRepository;
+import com.trial.urlshortener.repository.ShortUrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class HitCountFlushService {
     private final HitCountCounterService counterService;
-    private final UrlMappingRepository repository;
+    private final ShortUrlRepository repository;
 
     @Transactional
     @Scheduled(fixedRate = 10_000) // 10초마다 flush

@@ -1,8 +1,8 @@
 package com.trial.urlshortener.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.trial.urlshortener.entity.UrlMappingEntity;
-import com.trial.urlshortener.repository.UrlMappingRepository;
+import com.trial.urlshortener.entity.ShortUrlEntity;
+import com.trial.urlshortener.repository.ShortUrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ShortUrlResolveService {
     private final Cache<String, String> shortUrlCache;
-    private final UrlMappingRepository repository;
+    private final ShortUrlRepository repository;
     private final HitCountCounterService hitCountCounterService;
 
     @Transactional(readOnly = true)
@@ -20,7 +20,7 @@ public class ShortUrlResolveService {
         String originUrl = shortUrlCache.get(
                 shortCode,
                 key -> repository.findByShortCode(key)
-                        .map(UrlMappingEntity::getOriginUrl)
+                        .map(ShortUrlEntity::getOriginUrl)
                         .orElse(null)
         );
 

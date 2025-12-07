@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class UrlMappingEntity {
+public class ShortUrlEntity {
     @Id
     @Column
     private String shortCode;
@@ -35,12 +35,12 @@ public class UrlMappingEntity {
     @Column
     private LocalDateTime updatedAt;
 
-    public static UrlMappingEntity create(
+    public static ShortUrlEntity create(
             String shortCode,
             String originUrl,
             ShortUrlType urlType
     ) {
-        return new UrlMappingEntity(
+        return new ShortUrlEntity(
                 shortCode,
                 urlType,
                 originUrl,
@@ -48,10 +48,5 @@ public class UrlMappingEntity {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-    }
-
-    public void increaseHitCount(Long deltaHitCount) {
-        hitCount += deltaHitCount;
-        updatedAt = LocalDateTime.now();
     }
 }
